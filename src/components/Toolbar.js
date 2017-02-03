@@ -5,7 +5,7 @@
  */
 
 import React, {Component} from "react";
-import {EditorState, RichUtils, Entity} from "draft-js";
+import {EditorState, RichUtils} from "draft-js";
 import classNames from "classnames";
 import ToolbarItem from "./ToolbarItem";
 import {getSelectionCoords} from "../utils";
@@ -142,8 +142,9 @@ export default class Toolbar extends Component {
 
   getCurrentEntity() {
     const entityKey = this.getCurrentEntityKey();
+    const contentState = this.props.editorState.getCurrentContent();
     if(entityKey) {
-      return Entity.get(entityKey);
+      return contentState.getEntity(entityKey);
     }
     return null;
   }
@@ -158,7 +159,9 @@ export default class Toolbar extends Component {
 
   setEntity(entityType, data, mutability = "MUTABLE") {
     const {editorState} = this.props;
-    const entityKey = Entity.create(entityType, mutability, data);
+    const contentState = editorState.getCurrentContent();
+    const contentStateWithEntity = contentState.createEntity(entityType, mutability, data);
+    const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
     const newState = RichUtils.toggleLink(
       editorState,
       editorState.getSelection(),
