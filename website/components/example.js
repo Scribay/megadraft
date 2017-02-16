@@ -10,6 +10,7 @@ import getMuiTheme from "material-ui/styles/getMuiTheme";
 import {grey300, grey900, white, indigo500} from "material-ui/styles/colors";
 
 import {MegadraftEditor} from "../../src/Megadraft";
+import MegadraftIcons from "../../src/icons";
 import {editorStateToJSON, editorStateFromRaw} from "../../src/utils";
 import {highlightCode} from "./highlightCode";
 
@@ -18,7 +19,6 @@ import INITIAL_CONTENT from "./contentExample";
 import relatedArticles from "megadraft-related-articles-plugin";
 import image from "../../src/plugins/image/plugin";
 import video from "../../src/plugins/video/plugin";
-
 
 const muiTheme = getMuiTheme({
   fontFamily: "Roboto, sans-serif",
@@ -74,6 +74,22 @@ class Example extends React.Component {
   }
 
   renderEditor() {
+    const blockStyles = [
+      {type: "align-left", element: "div", className: "block-align-left"},
+      {type: "align-center", element: "div", className: "block-align-center"},
+      {type: "align-right", element: "div", className: "block-align-right"}
+    ];
+
+    const actions = [
+      {type: "inline", label: "B", style: "BOLD", icon: MegadraftIcons.BoldIcon},
+      {type: "inline", label: "I", style: "ITALIC", icon: MegadraftIcons.ItalicIcon},
+      {type: "separator"},
+      {type: "block", label: "QT", style: "blockquote", icon: MegadraftIcons.BlockQuoteIcon},
+      {type: "separator"},
+      {type: "block", label: "LEFT", style: "align-left", icon: MegadraftIcons.BlockQuoteIcon},
+      {type: "block", label: "CENTER", style: "align-center", icon: MegadraftIcons.BlockQuoteIcon},
+      {type: "block", label: "RIGHT", style: "align-right", icon: MegadraftIcons.BlockQuoteIcon}
+    ];
     return (
       <div className="tab-container-editor">
         <MegadraftEditor
@@ -83,7 +99,10 @@ class Example extends React.Component {
           onChange={this.onChange}
           keyBindings={this.keyBindings}
           resetStyleNewLine={this.resetStyleNewLine}
-          maxSidebarButtons={this.maxSidebarButtons}/>
+          maxSidebarButtons={this.maxSidebarButtons}
+          actions={actions}
+          blockStyles={blockStyles}
+        />
       </div>
     );
   }

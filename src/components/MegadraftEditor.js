@@ -17,7 +17,8 @@ import {
     getDefaultKeyBinding,
     EditorState,
     genKey,
-    ContentBlock
+    ContentBlock,
+    DefaultDraftBlockRenderMap
 } from "draft-js";
 import Immutable from "immutable";
 
@@ -43,6 +44,10 @@ export default class MegadraftEditor extends Component {
     this.onChange = ::this.onChange;
 
     this.mediaBlockRenderer = ::this.mediaBlockRenderer;
+
+    this.blockStyleFn = ::this.blockStyleFn;
+
+    this.blockRenderMap = ::this.blockRenderMap;
 
     this.handleKeyCommand = ::this.handleKeyCommand;
     this.handleReturn = ::this.handleReturn;
@@ -266,9 +271,30 @@ export default class MegadraftEditor extends Component {
 
   blockStyleFn(contentBlock) {
     const type = contentBlock.getType();
+    const blockStyles = this.props.blockStyles || [];
+    const blockStyle = blockStyles.filter(bs => bs.type === type)[0];
+    if (blockStyle) {
+      return blockStyle.className;
+    }
+
     if (type === "unstyled") {
       return "paragraph";
     }
+  }
+
+  blockRenderMap() {
+    if (!this.props.blockStyles) {
+      return DefaultDraftBlockRenderMap;
+    }
+    const newBlocks = new Map(this.props.blockStyles.map(bs => {
+      return [
+        bs.type,
+        {
+          element: bs.element
+        }
+      ];
+    }));
+    return DefaultDraftBlockRenderMap.merge(newBlocks);
   }
 
   renderSidebar(props) {
@@ -306,6 +332,7 @@ export default class MegadraftEditor extends Component {
             plugins={this.plugins}
             blockRendererFn={this.mediaBlockRenderer}
             blockStyleFn={this.blockStyleFn}
+            blockRenderMap={this.blockRenderMap()}
             onTab={this.onTab}
             handleKeyCommand={this.handleKeyCommand}
             handleReturn={this.handleReturn}
