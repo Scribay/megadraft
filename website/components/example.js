@@ -37,15 +37,18 @@ class Example extends React.Component {
   constructor(props) {
     super(props);
     const content = editorStateFromRaw(INITIAL_CONTENT);
-    this.keyBindings = [
-        { name: "save", isKeyBound: (e) => { return e.keyCode === 83 && e.ctrlKey; }, action: () => { this.onSave(); } }
-    ];
+    this.keyBindings = [{
+      name: "save",
+      isKeyBound: (e) => {return e.keyCode === 83 && e.ctrlKey;},
+      action: () => {this.onSave();}
+    }];
     this.resetStyleNewLine = true;
     this.state = {
       value: content,
     };
     this.onChange = ::this.onChange;
     this.onCodeActive = ::this.onCodeActive;
+    this.maxSidebarButtons = null;
   }
 
   getChildContext() {
@@ -79,7 +82,8 @@ class Example extends React.Component {
           placeholder="Text"
           onChange={this.onChange}
           keyBindings={this.keyBindings}
-          resetStyleNewLine={this.resetStyleNewLine}/>
+          resetStyleNewLine={this.resetStyleNewLine}
+          maxSidebarButtons={this.maxSidebarButtons}/>
       </div>
     );
   }

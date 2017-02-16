@@ -272,7 +272,7 @@ export default class MegadraftEditor extends Component {
   }
 
   renderSidebar(props) {
-    const { sidebarRendererFn } = this.props;
+    const {sidebarRendererFn} = this.props;
     if(typeof sidebarRendererFn === "function") {
       return sidebarRendererFn(props);
     }
@@ -280,7 +280,7 @@ export default class MegadraftEditor extends Component {
   }
 
   renderToolbar(props) {
-    const { Toolbar = DefaultToolbar } = this.props;
+    const {Toolbar = DefaultToolbar} = this.props;
     return <Toolbar {...props} />;
   }
 
@@ -295,7 +295,9 @@ export default class MegadraftEditor extends Component {
             plugins: this.plugins,
             editorState: this.props.editorState,
             readOnly: this.state.readOnly,
-            onChange: this.onChange
+            onChange: this.onChange,
+            maxSidebarButtons: this.props.maxSidebarButtons,
+            modalOptions: this.props.modalOptions,
           })}
           <Editor
             {...this.props}
