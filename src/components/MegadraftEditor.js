@@ -10,18 +10,18 @@
   (typeof global === "object" && global.global === global && global) ||
   this).__ = (x) => x;
 
-import React, {Component} from "react";
+import React, { Component } from "react";
 import {
-    Editor,
-    RichUtils,
-    getDefaultKeyBinding,
-    EditorState,
-    genKey,
-    ContentBlock,
-    DefaultDraftBlockRenderMap
+  Editor,
+  RichUtils,
+  getDefaultKeyBinding,
+  EditorState,
+  genKey,
+  ContentBlock,
+  DefaultDraftBlockRenderMap
 } from "draft-js";
 import Immutable from "immutable";
-
+import {handleTab} from "../utils";
 
 import DefaultToolbar from "./Toolbar";
 import Sidebar from "./Sidebar";
@@ -56,11 +56,13 @@ export default class MegadraftEditor extends Component {
 
     this.externalKeyBindings = ::this.externalKeyBindings;
 
+    this.onTab = ::this.onTab;
+
     this.actions = this.props.actions || DEFAULT_ACTIONS;
     this.plugins = this.getValidPlugins();
     this.entityInputs = this.props.entityInputs || DEFAULT_ENTITY_INPUTS;
     this.blocksWithoutStyleReset = (this.props.blocksWithoutStyleReset ||
-                                    NO_RESET_STYLE_DEFAULT);
+      NO_RESET_STYLE_DEFAULT);
 
     this.pluginsByType = this.getPluginsByType();
 
@@ -90,9 +92,9 @@ export default class MegadraftEditor extends Component {
     return pluginsByType;
   }
 
-  componentWillReceiveProps(nextProps){
+  componentWillReceiveProps(nextProps) {
     if (this.props.readOnly !== nextProps.readOnly) {
-      this.setState({readOnly: nextProps.readOnly});
+      this.setState({ readOnly: nextProps.readOnly });
     }
   }
 
@@ -110,7 +112,10 @@ export default class MegadraftEditor extends Component {
   }
 
   onTab(event) {
-    event.preventDefault();
+    const { editorState } = this.props;
+    this.onChange(
+      handleTab(event, editorState)
+    )
   }
 
   handleKeyCommand(command) {
@@ -123,7 +128,7 @@ export default class MegadraftEditor extends Component {
       }
     }
 
-    const {editorState} = this.props;
+    const { editorState } = this.props;
     const newState = RichUtils.handleKeyCommand(editorState, command);
     if (newState) {
       this.props.onChange(newState);
@@ -137,9 +142,9 @@ export default class MegadraftEditor extends Component {
    *
    * License: MIT
    */
-   //Based on https://github.com/icelab/draft-js-block-breakout-plugin
+  //Based on https://github.com/icelab/draft-js-block-breakout-plugin
   resetBlockStyle(editorState, selection, contentState, currentBlock, blockType) {
-    const {List} = Immutable;
+    const { List } = Immutable;
     const emptyBlockKey = genKey();
 
     const emptyBlock = new ContentBlock({
@@ -190,7 +195,7 @@ export default class MegadraftEditor extends Component {
     }
 
     if (!event.shiftKey) {
-      const {editorState} = this.props;
+      const { editorState } = this.props;
       const selection = editorState.getSelection();
       const contentState = editorState.getCurrentContent();
       const currentBlock = contentState.getBlockForKey(selection.getEndKey());
@@ -213,15 +218,15 @@ export default class MegadraftEditor extends Component {
       return false;
     }
 
-    const {editorState} = this.props;
+    const { editorState } = this.props;
 
     const currentContent = editorState.getCurrentContent();
     const currentSelection = editorState.getSelection();
     const contentBlock = currentContent.getBlockMap().get(currentSelection.getFocusKey());
     const contentText = contentBlock.getText();
 
-    if (contentText.charAt(currentSelection.focusOffset -1) == "\n" ||
-        contentText.charAt(currentSelection.focusOffset) == "\n"){
+    if (contentText.charAt(currentSelection.focusOffset - 1) == "\n" ||
+      contentText.charAt(currentSelection.focusOffset) == "\n") {
       return false;
     }
 
@@ -235,7 +240,7 @@ export default class MegadraftEditor extends Component {
   }
 
   setReadOnly(readOnly) {
-    this.setState({readOnly});
+    this.setState({ readOnly });
   }
 
   handleBlockNotFound(block) {
@@ -298,15 +303,15 @@ export default class MegadraftEditor extends Component {
   }
 
   renderSidebar(props) {
-    const {sidebarRendererFn} = this.props;
-    if(typeof sidebarRendererFn === "function") {
+    const { sidebarRendererFn } = this.props;
+    if (typeof sidebarRendererFn === "function") {
       return sidebarRendererFn(props);
     }
     return <Sidebar {...props} />;
   }
 
   renderToolbar(props) {
-    const {Toolbar = DefaultToolbar} = this.props;
+    const { Toolbar = DefaultToolbar } = this.props;
     return <Toolbar {...props} />;
   }
 

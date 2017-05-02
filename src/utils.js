@@ -9,7 +9,9 @@ import {
   convertToRaw,
   convertFromRaw,
   EditorState,
-  getVisibleSelectionRect} from "draft-js";
+  getVisibleSelectionRect,
+  Modifier
+} from "draft-js";
 
 import defaultDecorator from "./decorators/defaultDecorator";
 
@@ -34,8 +36,8 @@ export function getSelectedBlockElement(range) {
   let node = range.startContainer;
   do {
     const nodeIsDataBlock = node.getAttribute
-                            ? node.getAttribute("data-block")
-                            : null;
+      ? node.getAttribute("data-block")
+      : null;
     if (nodeIsDataBlock) {
       return node;
     }
@@ -57,10 +59,10 @@ export function getSelectionCoords(editor, toolbar) {
   const toolbarHeight = toolbar.offsetHeight;
   // const rangeHeight = rangeBounds.bottom - rangeBounds.top;
   const offsetLeft = (rangeBounds.left - editorBounds.left)
-            + (rangeWidth / 2);
+    + (rangeWidth / 2);
   const offsetTop = rangeBounds.top - editorBounds.top - (toolbarHeight + 14);
   const offsetBottom = editorBounds.bottom - rangeBounds.top + 14;
-  return {offsetLeft, offsetTop, offsetBottom};
+  return { offsetLeft, offsetTop, offsetBottom };
 }
 
 export function createTypeStrategy(type) {
@@ -76,4 +78,30 @@ export function createTypeStrategy(type) {
       callback
     );
   };
+}
+
+export function handleTab(event, editorState) {
+  event.preventDefault();
+
+  var contentState = editorState.getCurrentContent();
+  var selection = editorState.getSelection();
+  var startKey = selection.getStartKey();
+  var currentBlock = contentState.getBlockForKey(startKey);
+  var newContentState;
+
+  if (selection.isCollapsed()) {
+    newContentState = Modifier.insertText(
+      contentState,
+      selection,
+      '    '
+    );
+  } else {
+    newContentState = Modifier.replaceText(
+      contentState,
+      selection,
+      '    '
+    );
+  }
+
+  return EditorState.push(editorState, newContentState, 'insert-characters');
 }
