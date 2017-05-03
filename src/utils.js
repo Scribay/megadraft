@@ -88,7 +88,7 @@ export function handleTab(event, editorState) {
   var startKey = selection.getStartKey();
   var currentBlock = contentState.getBlockForKey(startKey);
   var newContentState;
-  var indent = '\xa0\xa0\xa0\xa0';
+  var indent = '\x09';
   if (selection.isCollapsed()) {
     newContentState = Modifier.insertText(
       contentState,
